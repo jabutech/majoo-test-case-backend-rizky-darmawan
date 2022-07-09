@@ -1,0 +1,534 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Majoo Apps",
+      "description": "Api spesification for App Majoo",
+      "contact": {
+        "name": "Rizky Darmawan",
+        "email": "darmawanrizky43@gmail.com",
+        "url": "http://jabutech.com"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8080",
+        "description": "Server development"
+      }
+    ],
+    "paths": {
+      "/api/v1/auth/login": {
+        "post": {
+          "summary": "Login users",
+          "tags": ["Login"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login"
+                },
+                "example": {
+                  "user_name": "admin1",
+                  "password": "admin1"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "format": "int32"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                            "description": "Token have content: id_user"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 200,
+                    "status": "success",
+                    "message": "You have successfully Login",
+                    "data": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOiIzNGUwNmZhMS1lN2E2LTQxZjMtYjI5Ny1lNDRjMjE3MWU1N2IiLCJmdWxsbmFtZSI6IlJpemt5IERhcm1hd2FuIiwiaXNfYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.XRIITRrmmDOkHe9phWhbK_wTsizXZNy0oLSPXBqfFwM"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Validation Error Or any errors",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "number"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "array",
+                        "description": "Field error obtained from package validator",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "example": {
+                      "code": 400,
+                      "status": "error",
+                      "message": "Login failed",
+                      "data": [
+                        "username must be required.",
+                        "Password minimum 3 characters."
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Other errors.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 500,
+                    "status": "error",
+                    "message": "Internal Server error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/v1/merchants/{merchant_id}/reports": {
+        "get": {
+          "description": "To access reports merchant <b>must be login</b>, and <b>can access only by users who have it</b>.",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "summary": "Report merchant per days.",
+          "tags": ["Merchants"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Merchant id",
+              "required": true
+            },
+            {
+                "name": "date_from",
+                "in": "query",
+                "description": "Date from report",
+                "required": true
+              },
+              {
+                "name": "date_to",
+                "in": "query",
+                "description": "Date to report",
+                "required": true
+              },
+              {
+                "name": "per_page",
+                "in": "query",
+                "description": "How much to display data per page, default 5"
+              },
+              {
+                "name": "current_page",
+                "in": "query",
+                "description": "The current page displaying, default 1"
+              }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get reports merchant success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "merchant_name": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string"
+                              },
+                              "omzet": {
+                                "type": "integer"
+                              }
+                          }
+                        }
+                      },
+                      "meta": {
+                        "type": "object",
+                        "properties": {
+                          "per_page": {
+                            "type": "integer"
+                          },
+                          "current_page": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 200,
+                    "status": "success",
+                    "message": "List of merchants",
+                    "data": [
+                      {
+                        "id": 1,
+                        "merchant_name": "Merchant 1",
+                        "date": "2021-11-01",
+                        "omzet": 20000000
+                      },
+                      {
+                        "id": 2,
+                        "merchant_name": "Merchant 1",
+                        "date": "2021-11-02",
+                        "omzet": 15000000
+                      },
+                      {
+                        "id": 2,
+                        "merchant_name": "Merchant 1",
+                        "date": "2021-11-03",
+                        "omzet": 0
+                      }
+                    ],
+                    "meta": {
+                      "per_page": 5,
+                      "current_page": 1
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Get reports merchant Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 401,
+                    "status": "error",
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Get reports merchant user not allowed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 403,
+                    "status": "error",
+                    "message": "User not allowed"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Get reports merchant Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 500,
+                    "status": "error",
+                    "message": "Internal Server error."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/v1/outlet/{outlet_id}/reports": {
+        "get": {
+          "description": "To access reports outlets merchant <b>must be login</b>, and <b>can access only by users who have it</b>.",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "summary": "Report outlets merchant per days.",
+          "tags": ["Outlet"],
+          "parameters": [
+            {
+              "name": "outlet_id",
+              "in": "path",
+              "required": true,
+              "description": "For filter display by specified outlet id"
+            },
+            {
+                "name": "date_from",
+                "in": "query",
+                "description": "Date from report",
+                "required": true
+              },
+              {
+                "name": "date_to",
+                "in": "query",
+                "description": "Date to report",
+                "required": true
+              },
+              {
+                "name": "per_page",
+                "in": "query",
+                "description": "How much to display data per page, default 5"
+              },
+              {
+                "name": "current_page",
+                "in": "query",
+                "description": "The current page displaying, default 1"
+              }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get reports outlet merchant success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "merchant_name": {
+                                "type": "string"
+                              },
+                              "outlet_name": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string"
+                              },
+                              "omzet": {
+                                "type": "integer"
+                              }
+                          }
+                        }
+                      },
+                      "total_data": {
+                        "type": "integer"
+                      },
+                      "per_page": {
+                        "type": "integer"
+                      },
+                      "current_page": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "example": {
+                    "code": 200,
+                    "status": "success",
+                    "message": "List of outlets",
+                    "data": [
+                      {
+                        "id": 1,
+                        "merchant_name": "Merchant 1",
+                        "outlet_name": "Outlet 1",
+                        "date": "2021-11-01",
+                        "omzet": 20000000
+                      },
+                      {
+                        "id": 2,
+                        "merchant_name": "Merchant 1",
+                        "outlet_name": "Outlet 1",
+                        "date": "2021-11-02",
+                        "omzet": 15000000
+                      }
+                    ],
+                    "meta": {
+                      "per_page": 5,
+                      "current_page": 1
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Get reports outlet merchant Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 401,
+                    "status": "error",
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Get reports outlet merchant user not allowed",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 403,
+                    "status": "error",
+                    "message": "User not allowed"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Get reports outlet merchant other errors",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ResponseFailedWithoutData"
+                  },
+                  "example": {
+                    "code": 500,
+                    "status": "error",
+                    "message": "Internal Server error."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT",
+          "description": "Authentication with JWT"
+        }
+      },
+      "schemas": {
+        "Login": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "required": ["true"]
+            },
+            "password": {
+              "type": "string",
+              "required": ["true"],
+              "minLength": 3
+            }
+          }
+        },
+        "ResponseFailedWithData": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "number"
+            },
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "ResponseFailedWithoutData": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "number"
+            },
+            "status": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  

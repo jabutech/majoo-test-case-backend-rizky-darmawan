@@ -1,0 +1,20 @@
+1. REST API dapat diakses pada folder majoo_test, panduan menjalankan dapat dibaca pada file README.md didalam folder
+    1.A Fungsi login dapat diakses pada endpoint `http://localhost:8080/api/v1/auth/login`.
+    1.B Authorization akan mengenerate jwt token ketika login.
+    1.C Generate laporan Merchant dapat diakses pada endpoint `http://localhost:8080/api/v1/merchants/:merchant_id/reports?current_page=1&date_from=2021-11-01&date_to=2021-11-30`
+    1.D Generate laporan Outlet dapat diakses pada endpoint `http://localhost:8080/api/v1/merchants/:merchant_id/reports?current_page=1&date_from=2021-11-01&date_to=2021-11-30`
+    1.E Mengecek dan mencoba fitur otorization saat generate laporan Merchant dapat dilihat pada documentation Postman yang disediakan pada file README.md pada bagian Folder Merchants->Merchants Transaction User Not Allowed
+    1.F Mengecek dan mencoba fitur otorization saat generate laporan Outlet dapat dilihat pada documentation Postman yang disediakan pada file README.md pada bagian Folder Outlets->Outlet Transaction User Not Allowed
+    1.G Untuk structur ERD pada Merchants dan Outlets masih belum optimal, dikarenakan kurang lengkapnya property, seperti:
+        - Merchant bisa ditambahkan seperti property merchant_code (unik antar merchant), address, phone untuk data lebih informatif, updated_by seharusnya tidak not_null karena akan terisi ketika ada action update.
+        - Outlet bisa ditambahkan seperti propert outlet_code (unik anta outlet), addrees, phone untuk data lebih informatif, updated_by seharusnya tidak not_null karena akan terisi ketika ada action update.
+        - Property id pada semua entity lebih baik menggunakan varchar dengan menggunakan UUID dengan berbagai keuntungan misalnya, ID tidak mudah ditebak oleh orang lain, memudahkan ketika kedepannya database di-distribusikan ke beberapa server (scale) agar terhindar dari id konflik dan manfaat lainnya.
+    1.H Dokumen teknis bisa dilihat pada dokumentasi file README.md pada bagian dokumentasi, disana disertakan dokumentasi dengan postman dan swagger
+
+2.  Jawaban:
+    - Pada model property struct `AreaValue` ditentukan tipe `int64`.
+    - Pada handler `InsertArea` terdapat parameter `param1` ditentukan tipe `int32` dan `param2` ditentukan tipe `int64`.
+    - Pada handler, terdapat `switch statement` yang disetiap case kecuali default, terdapat operasi perkalian antara `param1` dan `param2` pada variabel area, dimana disini terdapat masalah tidak dapat melakukan operasi perkalian jika antar kedua tipe data berbeda karena golang menganut static type dan juga pada Pada model property struct `AreaValue` sudah ditentukan dengan tipe data `int64`.
+    - Solusinya adalah pada saat melakukan operasi perkalian `param1` diubah terlebih dahulu tipenya ke `int64` seperti ini `var area := int64(param1) * param2`
+
+3. Jawaban dapat dilihat pada file `answer-question-number-3.pdf`
